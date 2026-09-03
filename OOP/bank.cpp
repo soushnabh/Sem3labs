@@ -1,6 +1,5 @@
 #include <bits/types/error_t.h>
 #include <iostream>
-#include <ostream>
 #include <string>
 using namespace std;
 class BankAccount {
