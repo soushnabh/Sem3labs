@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 using namespace std;
 
@@ -9,14 +10,14 @@ class ToBinary {
 
     void binary_direct() {
         for (int i = 31; i >= 0; i--) {
-            ans += (n >> i) & 1;
+            ans += to_string((n >> i) & 1);
         }
     }
 
     void binary_factor() {
         int temp = n;
         while (temp > 0) {
-            ans = char(temp % 2) + ans;
+            ans = to_string(temp % 2) + ans;
             temp /= 2;
         }
     }
@@ -31,18 +32,12 @@ int main() {
 
     cout << "1. Using bitshifting." << endl;
     b.binary_direct();
-    for (int x : b.ans) {
-        cout << x;
-    }
-    cout << endl;
+    cout << b.ans << endl;
     b.ans = "";
 
     cout << "2. Using factorization." << endl;
     b.binary_factor();
-    for (int x : b.ans) {
-        cout << x;
-    }
-    cout << endl;
+    cout << b.ans << endl;
 
     return 0;
 }
