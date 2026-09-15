@@ -1,0 +1,40 @@
+# Any directory named "exe", at any depth
+**/exe/
+
+# Vim swap and backup files
+*.swp
+*.swo
+*.swn
+*.swx
+.*.swp
+*~
+
+# Emacs temporary/lock files
+.#*
+\#*\#
+
+# C/C++ build output
+*.o
+*.obj
+*.a
+*.so
+*.dll
+*.exe
+*.out
+build/
+bin/
+dist/
+
+# Debugging and compiler files
+*.d
+*.pdb
+*.ilk
+
+# macOS and Windows junk
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editor/project settings
+.vscode/
+.idea/
