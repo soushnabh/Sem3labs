@@ -38,3 +38,5 @@ Desktop.ini
 # Editor/project settings
 .vscode/
 .idea/
+
+*.png
