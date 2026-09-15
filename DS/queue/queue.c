@@ -15,7 +15,7 @@ int main() {
   char op;
   int exit = 0;
   printf("Enter the operation ((i)nsert or (d)elete or (q)uit): ");
-  while (exit==0) { 
+  while (exit==0) {
     scanf("%c",&op);
     switch (op){
       case 'i': {
@@ -33,18 +33,28 @@ int main() {
         continue;
       }
     }
-    if (front == -1) {
+    if (front == rear && front == -1) {
       printf("The array is empty.\n");
     } else {
-    for (int i=front; i<=rear; i++){
-      printf("%d ",arr[i]);
-    }
+      printf("front: %d, rear: %d\n", front, rear);
+      if (front>rear) {
+        for (int i=front; i<n; i++){
+          printf("%d ",arr[i]);
+        }
+        for (int i=0; i<=rear; i++){
+          printf("%d ", arr[i]);
+        }
+      } else {
+        for (int i=front; i<=rear; i++){
+          printf("%d ",arr[i]);
+        }
+      }
     printf("\n");
     }
   }
 }
 void insert(int arr[], int n, int *front, int *rear){
-  if (*rear == n-1) {
+  if ((n == 1 && *front == 0) || (*rear > *front && *rear - *front == n - 1) || (*rear == *front - 1)) {
     printf("Overflow error.\n");
     return;
   } else {
@@ -53,7 +63,7 @@ void insert(int arr[], int n, int *front, int *rear){
     if (*front == -1 && *rear == -1){
       *front = 0; *rear = 0;
     } else {
-      *rear += 1;
+      *rear = (*rear + 1)%n;
     }
     arr[*rear]=val;
   }
@@ -64,6 +74,11 @@ void delete(int arr[], int n, int *front, int *rear){
     return;
   } else {
     printf("The removed element is: %d\n", arr[*front]);
-    *front+=1;
+    if (*front == *rear) {
+      *front = -1;
+      *rear = -1;
+    } else {
+      *front = (*front + 1)%n;
+    }
   }
 }
