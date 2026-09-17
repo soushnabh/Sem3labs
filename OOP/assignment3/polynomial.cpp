@@ -44,7 +44,7 @@ public:
         } else if (i > 0) {
           ans += " + ";
         }
-        if (abs(expr[i].coeff) != 1) {
+        if (abs(expr[i].coeff) != 1 || expr[i].power == 0) {
           ans += to_string(abs(expr[i].coeff));
         }
         if (expr[i].power != 0) {
