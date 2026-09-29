@@ -1,5 +1,7 @@
 #include "stdio.h"
 #include <stdlib.h>
+#include <sys/types.h>
+#include <time.h>
 
 struct Node {
     int data;
@@ -11,11 +13,9 @@ struct Node* availnext() {
 }
 
 void traverse(struct Node* start);
-struct Node* search(struct Node* start, int search);
 
 int append(struct Node** start, int val, struct Node** avail);
 int prepend(struct Node** start, int val, struct Node** avail);
-int insert(struct Node** start, int val, int search, struct Node** avail);
 
 int pop(struct Node** start);
 int popf(struct Node** start);
@@ -24,7 +24,7 @@ int main() {
     struct Node* start = NULL;
     struct Node* avail = availnext();
 
-    printf("(t)raverse/(s)earch/(a)ppend/(p)repend/(i)nsert/(f)pop-front/(r)pop-rear/(q)uit\n");
+    printf("(t)raverse/(a)ppend/(p)repend/(f)pop-front/(r)pop-rear/(q)uit\n");
     char op;
     while (1) {
         scanf(" %c", &op);
@@ -49,24 +49,6 @@ int main() {
             case 'r':
                 pop(&start);
                 break;
-            case 'i': {
-                int val, after;
-                printf("element and search: ");
-                scanf("%d %d", &val, &after);
-                insert(&start, val, after, &avail);
-                break;
-            }
-            case 's': {
-                int val;
-                printf("element: ");
-                scanf("%d", &val);
-                struct Node *found = search(start, val);
-                if (found != NULL)
-                    printf("%d\n", found->data);
-                else
-                    printf("Not found\n");
-                break;
-            }
             case 't':
                 traverse(start);
                 break;
@@ -86,26 +68,12 @@ void traverse(struct Node* start) {
         printf("empty\n");
     } else {
         printf("[");
-        while (ptr->next != NULL) {
+        while (ptr->next != start) {
             printf("%d, ", ptr->data);
             ptr = ptr->next;
         }
         printf("%d]\n", ptr->data);
     }
-}
-
-struct Node* search(struct Node* start, int search) {
-    struct Node* ptr = start;
-    struct Node* pos = NULL;
-    while (ptr!=NULL) {
-        if (ptr->data == search) {
-            pos = ptr;
-            break;
-        } else {
-            ptr = ptr->next;
-        }
-    }
-    return pos;
 }
 
 int prepend(struct Node** start, int val, struct Node** avail) {
@@ -115,7 +83,16 @@ int prepend(struct Node** start, int val, struct Node** avail) {
     struct Node* new = *avail;
     *avail = availnext();
     new->data = val;
-    new->next = *start;
+    if (*start != NULL) {
+        struct Node* ptr = *start;
+        while (ptr->next != *start) {
+            ptr = ptr->next;
+        }
+        ptr->next = new;
+        new->next = *start;
+    } else {
+        new->next = new;
+    }
     *start = new;
     return 0;
 }
@@ -127,38 +104,16 @@ int append(struct Node** start, int val, struct Node** avail) {
     struct Node* new = *avail;
     *avail = availnext();
     new->data = val;
-    new->next = NULL;
-    if (*start == NULL) {
-        *start = new;
-    } else {
+    if (*start != NULL) {
         struct Node* ptr = *start;
-        while (ptr->next != NULL) {
+        while (ptr->next != *start) {
             ptr = ptr->next;
         }
         ptr->next = new;
-    }
-    return 0;
-}
-
-int insert(struct Node** start, int val, int search, struct Node** avail) {
-    if (*avail == NULL) {
-        return 1;
-    }
-    struct Node* new = *avail;
-    *avail = availnext();
-    new->data = val;
-    struct Node* preptr = *start;
-    if (*start == NULL) {
-        return 1;
+        new->next = *start;
     } else {
-        while (preptr->next != NULL && preptr->data!=search) {
-            preptr = preptr->next;
-        }
-        if (preptr->data==search){
-            struct Node* ptr = preptr->next;
-            preptr->next = new;
-            new->next = ptr;
-        }
+        new->next = new;
+        *start = new;
     }
     return 0;
 }
@@ -169,14 +124,14 @@ int pop(struct Node** start) {
     }
     struct Node* ptr = *start;
     struct Node* preptr = ptr;
-    if (ptr->next == NULL) {
+    if (ptr->next == *start) {
         *start = NULL;
     } else {
-        while (ptr->next != NULL) {
+        while (ptr->next != *start) {
             preptr = ptr;
             ptr = ptr->next;
         }
-        preptr->next = NULL;
+        preptr->next = *start;
     }
     free(ptr);
     return 0;
@@ -187,7 +142,16 @@ int popf(struct Node** start) {
         return 1;
     }
     struct Node* ptr = *start;
-    *start = ptr->next;
-    free(ptr);
+    while (ptr->next != *start) {
+        ptr = ptr->next;
+    }
+    ptr->next = (*start)->next;
+    if (ptr->next == *start) {
+        free(*start);
+        *start = NULL;
+    } else {
+        free(*start);
+        *start = ptr->next;
+    }
     return 0;
 }
