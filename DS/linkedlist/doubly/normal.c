@@ -152,48 +152,60 @@ int append(struct Node** start, int val, struct Node** avail) {
 }
 
 int insert_before(struct Node** start, int val, int search, struct Node** avail) {
-    if (*avail == NULL) {
+    if (*start == NULL || *avail == NULL) {
         return 1;
     }
+
+    struct Node* target = *start;
+    while (target != NULL && target->data != search) {
+        target = target->next;
+    }
+    if (target == NULL) {
+        return 1;
+    }
+
     struct Node* new = *avail;
     *avail = availnext();
+
     new->data = val;
-    struct Node* preptr = *start;
-    if (*start == NULL) {
-        return 1;
+    new->prev = target->prev;
+    new->next = target;
+
+    if (target->prev != NULL) {
+        target->prev->next = new;
     } else {
-        while (preptr->next != NULL && preptr->data!=search) {
-            preptr = preptr->next;
-        }
-        if (preptr->data==search){
-            struct Node* ptr = preptr->next;
-            preptr->next = new;
-            new->next = ptr;
-        }
+        *start = new;
     }
+
+    target->prev = new;
     return 0;
 }
 
 int insert_after(struct Node** start, int val, int search, struct Node** avail) {
-    if (*avail == NULL) {
+    if (*start == NULL || *avail == NULL) {
         return 1;
     }
+
+    struct Node* target = *start;
+    while (target != NULL && target->data != search) {
+        target = target->next;
+    }
+    if (target == NULL) {
+        return 1;
+    }
+
     struct Node* new = *avail;
     *avail = availnext();
+
     new->data = val;
-    struct Node* preptr = *start;
-    if (*start == NULL) {
-        return 1;
-    } else {
-        while (preptr->next != NULL && preptr->data!=search) {
-            preptr = preptr->next;
-        }
-        if (preptr->data==search){
-            struct Node* ptr = preptr->next;
-            preptr->next = new;
-            new->next = ptr;
-        }
+    new->prev = target;
+    new->next = target->next;
+
+    if (target->next != NULL) {
+        target->next->prev = new;
     }
+
+    target->next = new;
     return 0;
 }
 
@@ -201,17 +213,18 @@ int pop(struct Node** start) {
     if (*start == NULL) {
         return 1;
     }
+
     struct Node* ptr = *start;
-    struct Node* preptr = ptr;
-    if (ptr->next == NULL) {
-        *start = NULL;
-    } else {
-        while (ptr->next != NULL) {
-            preptr = ptr;
-            ptr = ptr->next;
-        }
-        preptr->next = NULL;
+    while (ptr->next != NULL) {
+        ptr = ptr->next;
     }
+
+    if (ptr->prev != NULL) {
+        ptr->prev->next = NULL;
+    } else {
+        *start = NULL;
+    }
+
     free(ptr);
     return 0;
 }
@@ -220,16 +233,68 @@ int popf(struct Node** start) {
     if (*start == NULL) {
         return 1;
     }
+
     struct Node* ptr = *start;
-    *start = (*start)->next;
-    (*start)->prev = NULL;
+    *start = ptr->next;
+
+    if (*start != NULL) {
+        (*start)->prev = NULL;
+    }
+
     free(ptr);
     return 0;
 }
 
 int delete_before(struct Node** start, int search) {
-    
+    if (*start == NULL) {
+        return 1;
+    }
+
+    struct Node* target = *start;
+    while (target != NULL && target->data != search) {
+        target = target->next;
+    }
+
+    if (target == NULL || target->prev == NULL) {
+        return 1;  // Search value not found, or it is the first node.
+    }
+
+    struct Node* victim = target->prev;
+    target->prev = victim->prev;
+
+    if (victim->prev != NULL) {
+        victim->prev->next = target;
+    } else {
+        *start = target;
+    }
+
+    free(victim);
+    return 0;
 }
+
 int delete_after(struct Node** start, int search) {
-    
+    if (*start == NULL) {
+        return 1;
+    }
+
+    struct Node* target = *start;
+    while (target != NULL && target->data != search) {
+        target = target->next;
+    }
+
+    if (target == NULL || target->next == NULL) {
+        return 1;  // Search value not found, or it is the last node.
+    }
+
+    struct Node* victim = target->next;
+    target->next = victim->next;
+
+    if (victim->next != NULL) {
+        victim->next->prev = target;
+    }
+
+    free(victim);
+    return 0;
 }
+
+
