@@ -115,184 +115,78 @@ void traverse(struct Node* start) {
 }
 
 int prepend(struct Node** start, int val, struct Node** avail) {
-    if (*avail == NULL) {
-        return 1;
-    }
-    struct Node* new = *avail;
-    *avail = availnext();
-    new->data = val;
-    new->prev = NULL;
-    new->next = *start;
-    if (*start != NULL) {
-        (*start)->prev = new;
-    }
-    *start = new;
-    return 0;
+    if (*avail == NULL) return 1;
+    struct Node* new = *avail; *avail = availnext();
+    new->data = val; new->prev = NULL; new->next = *start;
+    if (*start) (*start)->prev = new;
+    *start = new; return 0;
 }
 
 int append(struct Node** start, int val, struct Node** avail) {
-    if (*avail == NULL) {
-        return 1;
-    }
-    struct Node* new = *avail;
-    *avail = availnext();
-    new->data = val;
-    new->next = NULL;
-    if (*start == NULL) {
-        *start = new;
-    } else {
-        struct Node* ptr = *start;
-        while (ptr->next != NULL) {
-            ptr = ptr->next;
-        }
-        ptr->next = new;
-        new->prev = ptr;
-    }
-    return 0;
+    if (*avail == NULL) return 1;
+    struct Node* new = *avail; *avail = availnext();
+    new->data = val; new->next = NULL;
+    if (*start == NULL) { new->prev = NULL; *start = new; return 0; }
+    struct Node* p = *start;
+    while (p->next) p = p->next;
+    p->next = new; new->prev = p; return 0;
 }
 
 int insert_before(struct Node** start, int val, int search, struct Node** avail) {
-    if (*start == NULL || *avail == NULL) {
-        return 1;
-    }
-
-    struct Node* target = *start;
-    while (target != NULL && target->data != search) {
-        target = target->next;
-    }
-    if (target == NULL) {
-        return 1;
-    }
-
-    struct Node* new = *avail;
-    *avail = availnext();
-
-    new->data = val;
-    new->prev = target->prev;
-    new->next = target;
-
-    if (target->prev != NULL) {
-        target->prev->next = new;
-    } else {
-        *start = new;
-    }
-
-    target->prev = new;
-    return 0;
+    if (*start == NULL || *avail == NULL) return 1;
+    struct Node* t = *start;
+    while (t && t->data != search) t = t->next;
+    if (t == NULL) return 1;
+    struct Node* new = *avail; *avail = availnext(); new->data = val;
+    new->prev = t->prev; new->next = t;
+    if (t->prev) t->prev->next = new; else *start = new;
+    t->prev = new; return 0;
 }
 
 int insert_after(struct Node** start, int val, int search, struct Node** avail) {
-    if (*start == NULL || *avail == NULL) {
-        return 1;
-    }
-
-    struct Node* target = *start;
-    while (target != NULL && target->data != search) {
-        target = target->next;
-    }
-    if (target == NULL) {
-        return 1;
-    }
-
-    struct Node* new = *avail;
-    *avail = availnext();
-
-    new->data = val;
-    new->prev = target;
-    new->next = target->next;
-
-    if (target->next != NULL) {
-        target->next->prev = new;
-    }
-
-    target->next = new;
-    return 0;
+    if (*start == NULL || *avail == NULL) return 1;
+    struct Node* t = *start;
+    while (t && t->data != search) t = t->next;
+    if (t == NULL) return 1;
+    struct Node* new = *avail; *avail = availnext(); new->data = val;
+    new->prev = t; new->next = t->next;
+    if (t->next) t->next->prev = new;
+    t->next = new; return 0;
 }
 
 int pop(struct Node** start) {
-    if (*start == NULL) {
-        return 1;
-    }
-
-    struct Node* ptr = *start;
-    while (ptr->next != NULL) {
-        ptr = ptr->next;
-    }
-
-    if (ptr->prev != NULL) {
-        ptr->prev->next = NULL;
-    } else {
-        *start = NULL;
-    }
-
-    free(ptr);
-    return 0;
+    if (*start == NULL) return 1;
+    struct Node* t = *start;
+    while (t->next) t = t->next;
+    if (t->prev) t->prev->next = NULL; else *start = NULL;
+    free(t); return 0;
 }
 
 int popf(struct Node** start) {
-    if (*start == NULL) {
-        return 1;
-    }
-
-    struct Node* ptr = *start;
-    *start = ptr->next;
-
-    if (*start != NULL) {
-        (*start)->prev = NULL;
-    }
-
-    free(ptr);
-    return 0;
+    if (*start == NULL) return 1;
+    struct Node* t = *start; *start = t->next;
+    if (*start) (*start)->prev = NULL;
+    free(t); return 0;
 }
 
 int delete_before(struct Node** start, int search) {
-    if (*start == NULL) {
-        return 1;
-    }
-
-    struct Node* target = *start;
-    while (target != NULL && target->data != search) {
-        target = target->next;
-    }
-
-    if (target == NULL || target->prev == NULL) {
-        return 1;  // Search value not found, or it is the first node.
-    }
-
-    struct Node* victim = target->prev;
-    target->prev = victim->prev;
-
-    if (victim->prev != NULL) {
-        victim->prev->next = target;
-    } else {
-        *start = target;
-    }
-
-    free(victim);
-    return 0;
+    if (*start == NULL) return 1;
+    struct Node* t = *start;
+    while (t && t->data != search) t = t->next;
+    if (t == NULL || t->prev == NULL) return 1;
+    struct Node* v = t->prev;
+    t->prev = v->prev;
+    if (v->prev) v->prev->next = t; else *start = t;
+    free(v); return 0;
 }
 
 int delete_after(struct Node** start, int search) {
-    if (*start == NULL) {
-        return 1;
-    }
-
-    struct Node* target = *start;
-    while (target != NULL && target->data != search) {
-        target = target->next;
-    }
-
-    if (target == NULL || target->next == NULL) {
-        return 1;  // Search value not found, or it is the last node.
-    }
-
-    struct Node* victim = target->next;
-    target->next = victim->next;
-
-    if (victim->next != NULL) {
-        victim->next->prev = target;
-    }
-
-    free(victim);
-    return 0;
+    if (*start == NULL) return 1;
+    struct Node* t = *start;
+    while (t && t->data != search) t = t->next;
+    if (t == NULL || t->next == NULL) return 1;
+    struct Node* v = t->next;
+    t->next = v->next;
+    if (v->next) v->next->prev = t;
+    free(v); return 0;
 }
