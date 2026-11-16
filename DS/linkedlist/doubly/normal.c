@@ -27,7 +27,7 @@ int main() {
     struct Node* start = NULL;
     struct Node* avail = availnext();
 
-    printf("(t)raverse/(s)earch/(a)ppend/(p)repend/(i)nsert/(f)pop-front/(r)pop-rear/(d)elete/(q)uit\n");
+    printf("(t)raverse/(a)ppend/(p)repend/(i)nsert/(f)pop-front/(r)pop-rear/(d)elete/(q)uit\n");
     char op;
     while (1) {
         scanf(" %c", &op);
@@ -58,7 +58,7 @@ int main() {
                 printf("element and search and (a)fter/(b)efore: ");
                 scanf("%d %d %c", &val, &search, &c);
                 switch (c) {
-                    case 'a': 
+                    case 'a':
                         insert_after(&start, val, search, &avail);
                         break;
                     case 'b':
@@ -78,7 +78,7 @@ int main() {
                 printf("search and (a)fter/(b)efore: ");
                 scanf("%d %c", &search, &c);
                 switch (c) {
-                    case 'a': 
+                    case 'a':
                         delete_after(&start, search);
                         break;
                     case 'b':
@@ -88,7 +88,7 @@ int main() {
                         printf("Invalid operation\n");
                 }
                 break;
-                        
+
             }
             case 'q':
                 return 0;
@@ -296,5 +296,3 @@ int delete_after(struct Node** start, int search) {
     free(victim);
     return 0;
 }
-
-
