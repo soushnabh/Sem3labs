@@ -54,7 +54,7 @@ int main() {
   }
 }
 void insert(int arr[], int n, int *front, int *rear){
-  if ((n == 1 && *front == 0) || (*rear > *front && *rear - *front == n - 1) || (*rear == *front - 1)) {
+  if ((*rear + 1) % n == *front) {
     printf("Overflow error.\n");
     return;
   } else {
