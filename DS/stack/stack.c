@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 void push(int arr[], int n, int *top);
-void pop(int arr[], int n, int *top);
+void pop(int arr[], int *top);
 int main() {
   int n;
   printf("Enter the number of elements: ");scanf("%d",&n);
@@ -14,7 +14,7 @@ int main() {
   char op;
   int exit = 0;
   printf("Enter the operation (p(u)sh or p(o)p or (q)uit): ");
-  while (exit==0) { 
+  while (exit==0) {
     scanf("%c",&op);
     switch (op){
       case 'u': {
@@ -22,7 +22,7 @@ int main() {
           break;
         }
       case 'o': {
-          pop(arr, n, &top);
+          pop(arr, &top);
           break;
         }
       case 'q': {
@@ -49,7 +49,7 @@ void push(int arr[], int n, int *top){
     arr[*top]=val;
   }
 }
-void pop(int arr[], int n, int *top){
+void pop(int arr[], int *top){
   if (*top == -1) {
     printf("Underflow error.\n");
     return;
